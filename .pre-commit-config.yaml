@@ -1,0 +1,48 @@
+fail_fast: true
+default_language_version:
+  python: python3.10
+repos:
+  - repo: https://github.com/codespell-project/codespell
+    rev: "v2.3.0"
+    hooks:
+      - id: codespell
+        additional_dependencies:
+          - tomli
+        args:
+          [
+            "--write-changes",
+            "--interactive",
+            "3",
+            "--exclude-file=go.mod,go.sum",
+          ]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.19.1
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        files: /.*\.(yaml|json)$
+      - id: end-of-file-fixer
+        files: /.*\.(yaml|json)$
+      - id: check-yaml
+        files: /.*\.yaml$
+        args: [--allow-multiple-documents]
+      - id: check-json
+        files: /.*\.json$
+      - id: pretty-format-json
+        args: [--autofix]
+        files: /.*\.json$
+      - id: check-toml
+        files: /.*\.toml$
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.0
+    hooks:
+      - id: go-fmt
+      - id: go-imports
+      - id: no-go-testing
+      - id: golangci-lint
+      - id: go-unit-tests

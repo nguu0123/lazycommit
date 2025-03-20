@@ -20,7 +20,7 @@ import (
 
 var (
 	colorProfile = termenv.ColorProfile()
-	version      = "1.0.0"
+	version      = "0.0.1"
 )
 
 type runOptions struct {
@@ -189,7 +189,7 @@ func main() {
 	rootCmd.Flags().StringSliceVarP(&opts.context, "context", "c", nil, "Additional context for commit message")
 
 	rootCmd.Version = version
-	rootCmd.SetVersionTemplate("lazycommit version {{.Version}}\n")
+	rootCmd.SetVersionTemplate("{{.Version}}\n")
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
