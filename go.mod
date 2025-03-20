@@ -1,4 +1,4 @@
-module github.com/coder/aicommit
+module github.com/nguu0123/lazycommit
 
 go 1.21.4
 

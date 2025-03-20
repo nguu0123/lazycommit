@@ -1,4 +1,4 @@
-package aicommit
+package main
 
 import (
 	"bytes"
@@ -84,8 +84,9 @@ func findGitRoot(dir string) (string, error) {
 	}
 }
 
-const styleGuideFilename = "COMMITS.md"
-const defaultUserStyleGuide = `
+const (
+	styleGuideFilename    = "COMMITS.md"
+	defaultUserStyleGuide = `
 1. Limit the subject line to 50 characters.
 2. Use the imperative mood in the subject line.
 3. Capitalize the subject line such as "Fix Issue 886" and don't end it with a period.
@@ -101,6 +102,7 @@ const defaultUserStyleGuide = `
 13. Prioritize clarity and brevity over completeness.
 14. Adhere to the repository's commit style if it exists.
 `
+)
 
 // findRepoStyleGuide searches for "COMMITS.md" in the repository root of dir
 // and returns its contents.
@@ -146,7 +148,7 @@ func BuildPrompt(
 		{
 			Role: openai.ChatMessageRoleSystem,
 			Content: strings.Join([]string{
-				"You are a tool called `aicommit` that generates high quality commit messages for git diffs.",
+				"You are a tool called `lazycommit` that generates high quality commit messages for git diffs.",
 				"Generate only the commit message, without any additional text.",
 			}, "\n"),
 		},

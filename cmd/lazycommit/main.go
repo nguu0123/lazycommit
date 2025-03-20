@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"al.essio.dev/pkg/shellescape"
-	"github.com/coder/aicommit"
 	"github.com/coder/pretty"
 	"github.com/muesli/termenv"
 	"github.com/sashabaranov/go-openai"
@@ -109,7 +108,7 @@ func run(opts runOptions) error {
 		}
 	}
 
-	msgs, err := aicommit.BuildPrompt(os.Stdout, workdir, hash, opts.amend, 128000)
+	msgs, err := BuildPrompt(os.Stdout, workdir, hash, opts.amend, 128000)
 	if err != nil {
 		return err
 	}
@@ -153,7 +152,12 @@ func run(opts runOptions) error {
 			}
 			return err
 		}
+		// NOTE: don't know why but when len is 0, it's finished
+		if len(resp.Choices) == 0 {
+			break
+		}
 		c := resp.Choices[0].Delta.Content
+
 		msg.WriteString(c)
 		pretty.Fprintf(os.Stdout, color, "%s", c)
 	}
@@ -180,6 +184,8 @@ func main() {
 	var opts runOptions
 	var openAIKey string
 
+	// Check if the key is empty
+
 	rootCmd := &cobra.Command{
 		Use:   "lazycommit [ref]",
 		Short: "Commit message generator using LLM",
@@ -187,14 +193,20 @@ func main() {
 			if len(args) > 0 {
 				opts.ref = args[0]
 			}
+
+			if openAIKey == "" {
+				fmt.Fprintln(os.Stderr, "OPENAI_API_KEY is not set")
+				os.Exit(1)
+			}
 			client := openai.NewClient(openAIKey)
 			opts.client = client
+
 			return run(opts)
 		},
 	}
 
 	rootCmd.Flags().StringVarP(&opts.model, "model", "m", "gpt-4o-2024-08-06", "The model to use")
-	rootCmd.Flags().StringVar(&openAIKey, "openai-key", "", "The OpenAI API key")
+	rootCmd.Flags().StringVar(&openAIKey, "openai-key", os.Getenv("OPENAI_API_KEY"), "The OpenAI API key")
 	rootCmd.Flags().StringVar(&opts.openAIBaseURL, "openai-base-url", "https://api.openai.com/v1", "The base URL for OpenAI API")
 	rootCmd.Flags().BoolVarP(&opts.dryRun, "dry-run", "d", false, "Dry run the commit command")
 	rootCmd.Flags().BoolVarP(&opts.amend, "amend", "a", false, "Amend the last commit")
