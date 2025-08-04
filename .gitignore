@@ -1,2 +1,4 @@
 bin/lazycommit
 dist
+# Added by goreleaser init:
+dist/
