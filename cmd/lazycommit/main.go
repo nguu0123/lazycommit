@@ -198,7 +198,9 @@ func main() {
 					os.Exit(1)
 				}
 			}
-			client := openai.NewClient(openAIKey)
+			config := openai.DefaultConfig(openAIKey)
+			config.BaseURL = opts.openAIBaseURL
+			client := openai.NewClientWithConfig(config)
 			opts.client = client
 
 			return run(opts)
